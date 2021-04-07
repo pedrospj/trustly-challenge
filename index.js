@@ -1,10 +1,13 @@
 const express = require('express');
+const routes = require('./src/constants/routes');
+
+const RepoController = require('./src/controllers/repoController');
 
 const app = express();
 
-app.get('/', (req, res) => {
-  res.status(200).json({ hello: 'world' });
-});
+//mounting routes
+const repoController = new RepoController();
+app.get(routes.REPO_GET, repoController.getRepoinfo);
 
 const PORT = process.env.PORT || 3000;
 
