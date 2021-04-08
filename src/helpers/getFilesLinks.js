@@ -1,26 +1,35 @@
 const fetch = require('node-fetch');
 const github = require('../constants/github');
+const validateResponse = require('../utils/validateResponse');
 
-const getFilesLinks = async (folderPath, res) => {
+const getFilesLinks = async (folderPath) => {
   try {
     const pageResponse = await fetch(`${github.GITHUB_URL}/${folderPath}`);
+
+    validateResponse(pageResponse);
+
     const pageContent = await pageResponse.text();
 
     const fileLinks = [];
     const folderLinks = [];
 
+    // get only <a> tags that are files or folders
     const anchors = pageContent.match(
       /<a class=\"js-navigation-open[^>]*>(.+?)<\/a>/gm
     );
 
     for (const anchor of anchors) {
+      //get <a> tag href
       const href = anchor.match(/href=['"]([^'"]+?)['"]/gm)[0];
       const path = href.slice(7, href.length - 1);
 
       if (path.includes('/blob/')) {
+        //it's a file
         fileLinks.push(path.replace('/blob/', '/'));
       } else {
-        folderLinks.push(getFilesLinks(path, res));
+        //it's a folder
+        //recursive get nested files links
+        folderLinks.push(getFilesLinks(path));
       }
     }
 
@@ -31,13 +40,9 @@ const getFilesLinks = async (folderPath, res) => {
 
     const filesArrays = await Promise.all(folderLinks);
 
-    //start recursion
     return fileLinks.concat(...filesArrays);
   } catch (error) {
-    return res.status(500).json({
-      message: `Something went wrong!`,
-      error: error,
-    });
+    throw error;
   }
 };
 
