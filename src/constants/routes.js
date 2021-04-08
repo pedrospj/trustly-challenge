@@ -1,5 +1,5 @@
 const routes = {
-  REPO_GET: '/',
+  REPO_GET: '/:username/:repoName/:branch?',
 };
 
 module.exports = routes;
