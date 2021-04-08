@@ -26,7 +26,7 @@ const getFilesLinks = async (folderPath, res) => {
 
     //end recursion
     if (folderLinks.length === 0) {
-      return [];
+      return fileLinks;
     }
 
     const filesArrays = await Promise.all(folderLinks);
