@@ -13,8 +13,7 @@ class CacheHandler {
   };
 
   getFromCache = async (key) => {
-    const value = await this.cacheClient.get(key);
-    return value;
+    return this.cacheClient.get(key);
   };
 }
 

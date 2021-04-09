@@ -25,8 +25,8 @@ getRepoinfo = async (req, res) => {
     await Promise.all(promises);
     const data = Object.values(responseObj);
 
-    const redisKey = `/${username}/${repoName}/${branch}`;
-    await cacheHandler.addToCache(redisKey, JSON.stringify(data));
+    const cacheKey = `/${username}/${repoName}/${branch}`;
+    await cacheHandler.addToCache(cacheKey, JSON.stringify(data));
 
     return res.status(200).json(data);
   } catch (error) {
