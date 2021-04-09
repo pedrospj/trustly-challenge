@@ -11,7 +11,6 @@ const ValidationMiddleware = require('./src/middlewares/validationMiddleware');
 const app = express();
 
 app.use(cors());
-// app.use(bodyParser.urlencoded({ limit: '50mb', extended: false }));
 
 //mouting middleware
 const redisMiddleware = new RedisMiddleware();
