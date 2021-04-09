@@ -1,4 +1,4 @@
-const { validateGithubUsername } = require('../utils/validateParams');
+const validateGithubUsername = require('../utils/validateGithubUsername');
 class ValidationMiddleware {
   validateUsername = (req, res, next) => {
     if (validateGithubUsername(req.params.username)) {

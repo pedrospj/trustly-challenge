@@ -11,4 +11,4 @@ function validateGithubUsername(username) {
   return true;
 }
 
-module.exports = { validateGithubUsername };
+module.exports = validateGithubUsername;
