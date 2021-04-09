@@ -5,11 +5,16 @@ const cors = require('cors');
 const routes = require('./src/constants/routes');
 
 const RepoController = require('./src/controllers/repoController');
+const RedisMiddleware = require('./src/middlewares/redisMiddleware');
 
 const app = express();
 
 app.use(cors());
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: false }));
+
+//mouting middleware
+const redisMiddleware = new RedisMiddleware();
+app.use(redisMiddleware.getInfoFromCache);
 
 //mounting routes
 const repoController = new RepoController();
