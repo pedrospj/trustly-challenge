@@ -9,12 +9,11 @@ cacheMiddleware = async (req, res, next) => {
     const value = await cacheHandler.getFromCache(key);
 
     if (value) {
-      //return from cache
+      //return early from cache
       return res.status(200).send(value);
-    } else {
-      // proceed to controller
-      next();
     }
+    // proceed to controller
+    next();
   } catch (error) {
     console.log('error', error);
   }

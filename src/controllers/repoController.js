@@ -16,10 +16,9 @@ getRepoinfo = async (req, res) => {
     //object that's gonna hold the final response
     const responseObj = {};
 
-    const promises = [];
-    for (const link of filesLinks) {
-      promises.push(processFileLink(responseObj, link));
-    }
+    const promises = filesLinks.map((link) =>
+      processFileLink(responseObj, link)
+    );
 
     //get files info
     await Promise.all(promises);
