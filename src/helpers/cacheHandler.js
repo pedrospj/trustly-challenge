@@ -8,7 +8,6 @@ class CacheHandler {
   }
 
   addToCache = async (key, value) => {
-    console.log('set\n\n');
     await this.cacheClient.set(key, value);
     await this.cacheClient.expire(key, process.env.REDIS_TTL);
   };
