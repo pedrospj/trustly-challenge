@@ -6,14 +6,17 @@ const routes = require('./src/constants/routes');
 
 const RepoController = require('./src/controllers/repoController');
 const RedisMiddleware = require('./src/middlewares/redisMiddleware');
+const ValidationMiddleware = require('./src/middlewares/validationMiddleware');
 
 const app = express();
 
 app.use(cors());
-app.use(bodyParser.urlencoded({ limit: '50mb', extended: false }));
+// app.use(bodyParser.urlencoded({ limit: '50mb', extended: false }));
 
 //mouting middleware
 const redisMiddleware = new RedisMiddleware();
+const validationMiddleware = new ValidationMiddleware();
+app.use(routes.REPO_GET, validationMiddleware.validateUsername);
 app.use(redisMiddleware.getInfoFromCache);
 
 //mounting routes

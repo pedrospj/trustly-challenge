@@ -8,7 +8,7 @@ class RepoControler {
   constructor() {
     this.redis = new Redis(process.env.REDIS_URL);
   }
-  getRepoinfo = async (req, res, next) => {
+  getRepoinfo = async (req, res) => {
     try {
       const username = req.params.username;
       const repoName = req.params.repoName;
