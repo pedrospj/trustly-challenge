@@ -1,44 +1,45 @@
 const fetch = require('node-fetch');
 const github = require('../constants/github');
+const validateResponse = require('../utils/validateResponse');
 
-const getFilesLinks = async (folderPath, res) => {
-  try {
-    const pageResponse = await fetch(`${github.GITHUB_URL}/${folderPath}`);
-    const pageContent = await pageResponse.text();
+const getFilesLinks = async (folderPath) => {
+  const pageResponse = await fetch(`${github.GITHUB_URL}/${folderPath}`);
 
-    const fileLinks = [];
-    const folderLinks = [];
+  validateResponse(pageResponse);
 
-    const anchors = pageContent.match(
-      /<a class=\"js-navigation-open[^>]*>(.+?)<\/a>/gm
-    );
+  const pageContent = await pageResponse.text();
 
-    for (const anchor of anchors) {
-      const href = anchor.match(/href=['"]([^'"]+?)['"]/gm)[0];
-      const path = href.slice(7, href.length - 1);
+  const fileLinks = [];
+  const folderLinks = [];
 
-      if (path.includes('/blob/')) {
-        fileLinks.push(path.replace('/blob/', '/'));
-      } else {
-        folderLinks.push(getFilesLinks(path, res));
-      }
+  // get only <a> tags that are files or folders
+  const anchors = pageContent.match(
+    /<a class=\"js-navigation-open[^>]*>(.+?)<\/a>/gm
+  );
+
+  for (const anchor of anchors) {
+    //get <a> tag href
+    const href = anchor.match(/href=['"]([^'"]+?)['"]/gm)[0];
+    const path = href.slice(7, href.length - 1);
+
+    if (path.includes('/blob/')) {
+      //it's a file
+      fileLinks.push(path.replace('/blob/', '/'));
+    } else {
+      //it's a folder
+      //recursive get nested files links
+      folderLinks.push(getFilesLinks(path));
     }
-
-    //end recursion
-    if (folderLinks.length === 0) {
-      return fileLinks;
-    }
-
-    const filesArrays = await Promise.all(folderLinks);
-
-    //start recursion
-    return fileLinks.concat(...filesArrays);
-  } catch (error) {
-    return res.status(500).json({
-      message: `Something went wrong!`,
-      error: error,
-    });
   }
+
+  //end recursion
+  if (folderLinks.length === 0) {
+    return fileLinks;
+  }
+
+  const filesArrays = await Promise.all(folderLinks);
+
+  return fileLinks.concat(...filesArrays);
 };
 
 module.exports = getFilesLinks;
