@@ -6,7 +6,7 @@ const routes = require('./src/constants/routes');
 const RepoController = require('./src/controllers/repoController');
 const validateUsernameMiddleware = require('./src/middlewares/validationMiddleware');
 const cacheMiddleware = require('./src/middlewares/cacheMiddleware');
-
+const { server } = require('./src/__tests__/repoController.test');
 const app = express();
 app.use(cors());
 

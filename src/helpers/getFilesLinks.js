@@ -1,7 +1,7 @@
 const fetch = require('node-fetch');
 const github = require('../constants/github');
 const validateResponse = require('../utils/validateResponse');
-
+const { mockHtml } = require('../constants/mock');
 const getFilesLinks = async (folderPath) => {
   const pageResponse = await fetch(`${github.GITHUB_URL}/${folderPath}`);
 
