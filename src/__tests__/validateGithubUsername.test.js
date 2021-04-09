@@ -1,5 +1,4 @@
 const validateGithubUsername = require('../utils/validateGithubUsername');
-const getStringInfo = require('../utils/getStringInfo');
 
 describe('validateGithubUsername', () => {
   it('should return true for valid usernames', () => {
