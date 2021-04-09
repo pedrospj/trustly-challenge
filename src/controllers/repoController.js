@@ -1,13 +1,13 @@
+const Redis = require('ioredis');
 const getFilesLinks = require('../helpers/getFilesLinks');
 const processFileLink = require('../helpers/processFileLink');
-
+const redisConst = require('../constants/redis');
 class RepoControler {
-  projectFolder = '';
+  redis;
 
   constructor() {
-    this.projectFolder = process.cwd();
+    this.redis = new Redis(process.env.REDIS_URL);
   }
-
   getRepoinfo = async (req, res) => {
     try {
       const username = req.params.username;
@@ -29,11 +29,21 @@ class RepoControler {
 
       //get files info
       await Promise.all(promises);
+      const data = Object.values(responseObj);
 
-      return res.status(200).json(Object.values(responseObj));
+      const redisKey = `/${username}/${repoName}/${branch}`;
+      await this._cacheRepoInfo(redisKey, JSON.stringify(data));
+
+      return res.status(200).json(data);
     } catch (error) {
+      console.log(error);
       return res.status(400).json(error);
     }
+  };
+
+  _cacheRepoInfo = async (key, data) => {
+    await this.redis.set(key, data);
+    await this.redis.expire(key, redisConst.CACHE_SECONDS);
   };
 }
 
