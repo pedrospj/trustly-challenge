@@ -10,10 +10,16 @@ class RedisMiddleware {
 
   getInfoFromCache = async (req, res, next) => {
     try {
-      const value = await this.redis.get(req.originalUrl);
+      //check if route has branch name
+      const hasBranchName = req.originalUrl.split('/').length > 3;
+      const key = hasBranchName ? req.originalUrl : `${req.originalUrl}/master`;
+      const value = await this.redis.get(key);
+
       if (value) {
+        //return from cache
         return res.status(200).send(value);
       } else {
+        // proceed to controller
         next();
       }
     } catch (error) {

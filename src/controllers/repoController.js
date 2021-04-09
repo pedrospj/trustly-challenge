@@ -1,7 +1,7 @@
 const Redis = require('ioredis');
 const getFilesLinks = require('../helpers/getFilesLinks');
 const processFileLink = require('../helpers/processFileLink');
-
+const redisConst = require('../constants/redis');
 class RepoControler {
   redis;
 
@@ -43,7 +43,7 @@ class RepoControler {
 
   _cacheRepoInfo = async (key, data) => {
     await this.redis.set(key, data);
-    await this.redis.expire(key, 600);
+    await this.redis.expire(key, redisConst.CACHE_SECONDS);
   };
 }
 
