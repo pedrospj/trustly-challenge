@@ -1,9 +1,3 @@
-const mockHtmlResponse = [
-  { extension: 'js', bytes: 8066, lines: 325, count: 16 },
-  { extension: 'json', bytes: 288468, lines: 7473, count: 2 },
-  { extension: '', bytes: 86, lines: 11, count: 2 },
-];
-
 const mockRawFile = `
 require('dotenv').config();
 const express = require('express');
@@ -171,4 +165,4 @@ const mockHtml = `
   <div>exemplo</div>
   `;
 
-module.exports = { mockHtmlResponse, mockHtml, mockRawFile };
+module.exports = { mockHtml, mockRawFile };

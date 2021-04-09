@@ -1,37 +1,49 @@
 const { rest } = require('msw');
 const { setupServer } = require('msw/node');
-const request = require('supertest');
-const {
-  mockHtmlResponse,
-  mockHtml,
-  mockRawFile,
-} = require('../constants/mock');
+const getFilesLinks = require('../helpers/getFilesLinks');
+const processFileLink = require('../helpers/processFileLink');
+const { mockHtml, mockRawFile } = require('../constants/mock');
+const github = require('../constants/github');
+const REPO = `pedrospj/trustly-challenge/file-list/main`;
 
-const HEROKU_URL = 'https://pedrospj-trustly-challenge.herokuapp.com';
-const REPO = '/pedrospj/trustly-challenge';
+//mock github response
+const server = setupServer(
+  rest.get(`${github.GITHUB_URL}/*`, (req, res, ctx) => {
+    return res(ctx.status(200), ctx.body(mockHtml));
+  }),
+
+  rest.get(`${github.GITHUB_RAW_FILE}/*`, (req, res, ctx) => {
+    return res(ctx.status(200), ctx.body(mockRawFile));
+  })
+);
 
 beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
-const server = setupServer(
-  rest.get('https://raw.githubusercontent.com/*', (req, res, ctx) => {
-    console.log('server', req.url.href);
-    return res(ctx.status(400), ctx.body(mockRawFile));
-  })
-);
+describe('getFilesLinks', () => {
+  it('should return files URLs', async () => {
+    const links = await getFilesLinks(REPO);
 
-const sortInfo = (a, b) => a.lines - b.lines;
-
-it('should return 200 and the info about the repo', (done) => {
-  request('http://localhost:3000')
-    .get(`${REPO}/main`)
-    .expect(200)
-    .then((resp) => {
-      console.log(resp.body);
-      expect(resp.body.sort(sortInfo)).toEqual(mockHtmlResponse.sort(sortInfo));
-      done();
-    });
+    expect(links).toEqual([
+      'pedrospj/trustly-challenge/main/.eslintrc.js',
+      'pedrospj/trustly-challenge/main/.gitignore',
+      'pedrospj/trustly-challenge/main/.prettierrc',
+      'pedrospj/trustly-challenge/main/index.js',
+      'pedrospj/trustly-challenge/main/jest.config.js',
+      'pedrospj/trustly-challenge/main/package-lock.json',
+      'pedrospj/trustly-challenge/main/package.json',
+    ]);
+  });
 });
 
-module.exports = { server };
+describe('getFilesLinks', () => {
+  it('should return files URLs', async () => {
+    const finalObj = {};
+    await processFileLink(finalObj, 'pedrospj/trustly-challenge/main/index.js');
+
+    expect(finalObj).toEqual({
+      js: { extension: 'js', bytes: 659, lines: 27, count: 1 },
+    });
+  });
+});
