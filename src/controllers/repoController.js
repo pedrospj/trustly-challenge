@@ -2,12 +2,6 @@ const getFilesLinks = require('../helpers/getFilesLinks');
 const processFileLink = require('../helpers/processFileLink');
 
 class RepoControler {
-  projectFolder = '';
-
-  constructor() {
-    this.projectFolder = process.cwd();
-  }
-
   getRepoinfo = async (req, res) => {
     try {
       const username = req.params.username;
